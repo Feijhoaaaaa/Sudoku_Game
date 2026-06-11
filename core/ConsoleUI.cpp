@@ -10,6 +10,16 @@
 
 namespace
 {
+const char* RESET_COLOR = "\033[0m";
+const char* TITLE_COLOR = "\033[1;38;5;81m";
+const char* STATUS_COLOR = "\033[38;5;250m";
+const char* FIXED_CELL_COLOR = "\033[1;38;5;255m";
+const char* PLAYER_CELL_COLOR = "\033[1;38;5;114m";
+const char* EMPTY_CELL_COLOR = "\033[38;5;244m";
+const char* SELECTED_CELL_COLOR = "\033[1;38;5;16;48;5;117m";
+const char* HELP_TITLE_COLOR = "\033[1;38;5;117m";
+const char* HELP_TEXT_COLOR = "\033[38;5;250m";
+
 enum class Key
 {
     Up,
@@ -212,13 +222,32 @@ std::string helpLine(int row)
     case 7:
         return "Kolory:";
     case 8:
-        return "  cyan      - pola startowe";
+        return "  bialy     - pola startowe";
     case 9:
-        return "  zolty     - pola gracza";
+        return "  zielony   - pola gracza";
     case 10:
-        return "  odwrocony - aktywne pole";
+        return "  niebieski - aktywne pole";
     default:
         return "";
+    }
+}
+
+void printHelpLine(int row)
+{
+    std::string line = helpLine(row);
+
+    if (line.empty())
+    {
+        return;
+    }
+
+    if (line == "Sterowanie:" || line == "Kolory:")
+    {
+        std::cout << HELP_TITLE_COLOR << line << RESET_COLOR;
+    }
+    else
+    {
+        std::cout << HELP_TEXT_COLOR << line << RESET_COLOR;
     }
 }
 }
@@ -236,8 +265,8 @@ void ConsoleUI::render() const
 
     const Board& board = game.getBoard();
 
-    std::cout << "Sudoku" << std::endl;
-    std::cout << statusMessage << std::endl;
+    std::cout << TITLE_COLOR << "Sudoku" << RESET_COLOR << std::endl;
+    std::cout << STATUS_COLOR << statusMessage << RESET_COLOR << std::endl;
     std::cout << std::endl;
 
     int helpRow = 0;
@@ -246,7 +275,9 @@ void ConsoleUI::render() const
     {
         if (row % Board::BOX_SIZE == 0 && row != 0)
         {
-            std::cout << "------+-------+------   " << helpLine(helpRow) << std::endl;
+            std::cout << STATUS_COLOR << "------+-------+------" << RESET_COLOR << "   ";
+            printHelpLine(helpRow);
+            std::cout << std::endl;
             helpRow++;
         }
 
@@ -254,7 +285,7 @@ void ConsoleUI::render() const
         {
             if (col % Board::BOX_SIZE == 0 && col != 0)
             {
-                std::cout << "| ";
+                std::cout << STATUS_COLOR << "| " << RESET_COLOR;
             }
 
             bool selected = row == selectedRow && col == selectedCol;
@@ -263,15 +294,19 @@ void ConsoleUI::render() const
 
             if (selected)
             {
-                std::cout << "\033[7m";
+                std::cout << SELECTED_CELL_COLOR;
             }
             else if (fixed)
             {
-                std::cout << "\033[1;36m";
+                std::cout << FIXED_CELL_COLOR;
+            }
+            else if (value == 0)
+            {
+                std::cout << EMPTY_CELL_COLOR;
             }
             else
             {
-                std::cout << "\033[1;33m";
+                std::cout << PLAYER_CELL_COLOR;
             }
 
             if (value == 0)
@@ -283,10 +318,12 @@ void ConsoleUI::render() const
                 std::cout << value << " ";
             }
 
-            std::cout << "\033[0m";
+            std::cout << RESET_COLOR;
         }
 
-        std::cout << "   " << helpLine(helpRow) << std::endl;
+        std::cout << "   ";
+        printHelpLine(helpRow);
+        std::cout << std::endl;
         helpRow++;
     }
 
