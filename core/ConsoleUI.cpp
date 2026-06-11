@@ -4,6 +4,7 @@
 
 #include <cctype>
 #include <iostream>
+#include <string>
 #include <termios.h>
 #include <unistd.h>
 
@@ -189,6 +190,37 @@ int keyToValue(Key key)
         return -1;
     }
 }
+
+std::string helpLine(int row)
+{
+    switch (row)
+    {
+    case 0:
+        return "Sterowanie:";
+    case 1:
+        return "  Strzalki  - ruch kursorem";
+    case 2:
+        return "  1-9       - wpisz cyfre";
+    case 3:
+        return "  0         - wyczysc pole";
+    case 4:
+        return "  Backspace - wyczysc pole";
+    case 5:
+        return "  Delete    - wyczysc pole";
+    case 6:
+        return "  q         - wyjscie";
+    case 7:
+        return "Kolory:";
+    case 8:
+        return "  cyan      - pola startowe";
+    case 9:
+        return "  zolty     - pola gracza";
+    case 10:
+        return "  odwrocony - aktywne pole";
+    default:
+        return "";
+    }
+}
 }
 
 ConsoleUI::ConsoleUI()
@@ -205,13 +237,17 @@ void ConsoleUI::render() const
     const Board& board = game.getBoard();
 
     std::cout << "Sudoku" << std::endl;
-    std::cout << statusMessage << std::endl << std::endl;
+    std::cout << statusMessage << std::endl;
+    std::cout << std::endl;
+
+    int helpRow = 0;
 
     for (int row = 0; row < Board::SIZE; row++)
     {
         if (row % Board::BOX_SIZE == 0 && row != 0)
         {
-            std::cout << "------+-------+------" << std::endl;
+            std::cout << "------+-------+------   " << helpLine(helpRow) << std::endl;
+            helpRow++;
         }
 
         for (int col = 0; col < Board::SIZE; col++)
@@ -250,7 +286,8 @@ void ConsoleUI::render() const
             std::cout << "\033[0m";
         }
 
-        std::cout << std::endl;
+        std::cout << "   " << helpLine(helpRow) << std::endl;
+        helpRow++;
     }
 
     std::cout << std::endl;
