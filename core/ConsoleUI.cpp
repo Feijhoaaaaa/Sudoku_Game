@@ -290,6 +290,26 @@ std::string separatorLine(int size, int boxSize, int cellWidth)
     return line;
 }
 
+int boardTextWidth(int size, int boxSize, int cellWidth)
+{
+    int valuesWidth = size * (cellWidth + 1);
+    int separatorsWidth = (size / boxSize - 1) * 2;
+
+    return valuesWidth + separatorsWidth;
+}
+
+void printHelpPadding(int printedWidth, int boardWidth)
+{
+    int spacing = boardWidth - printedWidth + 4;
+
+    if (spacing < 4)
+    {
+        spacing = 4;
+    }
+
+    std::cout << std::string(spacing, ' ');
+}
+
 std::string helpLine(int row, int maxValue)
 {
     switch (row)
@@ -297,31 +317,31 @@ std::string helpLine(int row, int maxValue)
     case 0:
         return "Sterowanie:";
     case 1:
-        return "  Strzalki  - ruch kursorem";
+        return "  Strzalki     - ruch kursorem";
     case 2:
-        return maxValue > 9 ? "  1-9       - wpisz 1-9" : "  1-9       - wpisz cyfre";
+        return maxValue > 9 ? "  1-9          - wpisz 1-9" : "  1-9          - wpisz cyfre";
     case 3:
-        return maxValue > 9 ? "  1 potem 0 - wpisz 10" : "  0         - wyczysc pole";
+        return maxValue > 9 ? "  1 potem 0    - wpisz 10" : "  0            - wyczysc pole";
     case 4:
-        return maxValue > 9 ? "  1 potem 1 - wpisz 11" : "  Backspace - wyczysc pole";
+        return maxValue > 9 ? "  1 potem 1    - wpisz 11" : "  Backspace    - wyczysc pole";
     case 5:
-        return maxValue > 9 ? "  1 potem 2-6 - wpisz 12-16" : "  Delete    - wyczysc pole";
+        return maxValue > 9 ? "  1 potem 2-6  - wpisz 12-16" : "  Delete       - wyczysc pole";
     case 6:
-        return maxValue > 9 ? "  1 + Enter - wpisz 1" : "  s         - zapisz gre";
+        return maxValue > 9 ? "  1 + Enter    - wpisz 1" : "  s            - zapisz gre";
     case 7:
-        return maxValue > 9 ? "  0/Del     - wyczysc pole" : "  q         - powrot do menu";
+        return maxValue > 9 ? "  0/Del        - wyczysc pole" : "  q            - powrot do menu";
     case 8:
-        return maxValue > 9 ? "  s         - zapisz gre" : "Kolory:";
+        return maxValue > 9 ? "  s            - zapisz gre" : "Kolory:";
     case 9:
-        return maxValue > 9 ? "  q         - powrot do menu" : "  bialy     - pola startowe";
+        return maxValue > 9 ? "  q            - powrot do menu" : "  bialy        - pola startowe";
     case 10:
-        return maxValue > 9 ? "Kolory:" : "  zielony   - pola gracza";
+        return maxValue > 9 ? "Kolory:" : "  zielony      - pola gracza";
     case 11:
-        return maxValue > 9 ? "  bialy     - pola startowe" : "  niebieski - aktywne pole";
+        return maxValue > 9 ? "  bialy        - pola startowe" : "  niebieski    - aktywne pole";
     case 12:
-        return maxValue > 9 ? "  zielony   - pola gracza" : "";
+        return maxValue > 9 ? "  zielony      - pola gracza" : "";
     case 13:
-        return maxValue > 9 ? "  niebieski - aktywne pole" : "";
+        return maxValue > 9 ? "  niebieski    - aktywne pole" : "";
     default:
         return "";
     }
@@ -469,6 +489,7 @@ void ConsoleUI::renderGame() const
     int size = game->getSize();
     int boxSize = game->getBoxSize();
     int cellWidth = game->getMaxValue() > 9 ? 2 : 1;
+    int boardWidth = boardTextWidth(size, boxSize, cellWidth);
     int helpRow = 0;
 
     std::cout << TITLE_COLOR << game->getName() << RESET_COLOR << std::endl;
@@ -480,7 +501,10 @@ void ConsoleUI::renderGame() const
     {
         if (row % boxSize == 0 && row != 0)
         {
-            std::cout << STATUS_COLOR << separatorLine(size, boxSize, cellWidth) << RESET_COLOR << "   ";
+            std::string separator = separatorLine(size, boxSize, cellWidth);
+
+            std::cout << STATUS_COLOR << separator << RESET_COLOR;
+            printHelpPadding(static_cast<int>(separator.length()), boardWidth);
             printHelpLine(helpRow, game->getMaxValue());
             std::cout << std::endl;
             helpRow++;
@@ -518,7 +542,7 @@ void ConsoleUI::renderGame() const
             std::cout << std::setw(cellWidth) << formatValue(value) << " " << RESET_COLOR;
         }
 
-        std::cout << "   ";
+        printHelpPadding(boardWidth, boardWidth);
         printHelpLine(helpRow, game->getMaxValue());
         std::cout << std::endl;
         helpRow++;
