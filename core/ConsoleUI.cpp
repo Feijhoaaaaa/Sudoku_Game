@@ -276,15 +276,17 @@ std::string formatValue(int value)
 std::string separatorLine(int size, int boxSize, int cellWidth)
 {
     std::string line;
+    int groupCount = size / boxSize;
+    int groupWidth = boxSize * (cellWidth + 1);
 
-    for (int col = 0; col < size; col++)
+    for (int group = 0; group < groupCount; group++)
     {
-        if (col % boxSize == 0 && col != 0)
+        if (group != 0)
         {
-            line += "+";
+            line += "+-";
         }
 
-        line += std::string(cellWidth + 1, '-');
+        line += std::string(groupWidth, '-');
     }
 
     return line;
@@ -309,11 +311,11 @@ std::string helpLine(int row, int maxValue)
     case 6:
         return maxValue > 9 ? "  1 + Enter    - wpisz 1" : "  s            - zapisz gre";
     case 7:
-        return maxValue > 9 ? "  0/Del        - wyczysc pole" : "  q            - powrot do menu";
+        return maxValue > 9 ? "    0/Del        - wyczysc pole" : "  q            - powrot do menu";
     case 8:
         return maxValue > 9 ? "  s            - zapisz gre" : "Kolory:";
     case 9:
-        return maxValue > 9 ? "  q            - powrot do menu" : "  bialy        - pola startowe";
+        return maxValue > 9 ? "   s q            - powrot do menu" : "  bialy        - pola startowe";
     case 10:
         return maxValue > 9 ? "Kolory:" : "  zielony      - pola gracza";
     case 11:
