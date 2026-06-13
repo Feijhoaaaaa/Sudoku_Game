@@ -212,7 +212,7 @@ std::string helpLine(int row)
     case 2:
         return "  1-9       - wpisz cyfre";
     case 3:
-        return "  0         - wyczysc pole";
+        return "   0         - wyczysc pole";
     case 4:
         return "  Backspace - wyczysc pole";
     case 5:

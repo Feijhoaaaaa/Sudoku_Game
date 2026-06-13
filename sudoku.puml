@@ -1,0 +1,117 @@
+@startuml
+
+
+
+
+
+/' Objects '/
+
+class Board {
+	+Board()
+	+at(int row, int col) : Cell&
+	+at(int row, int col) : Cell& {query}
+	+operator()(int row, int col) : Cell&
+	+operator()(int row, int col) : Cell& {query}
+	-cells : Cell[]
+	+isEmpty(int row, int col) : bool {query}
+	+isFixed(int row, int col) : bool {query}
+	+isFull() : bool {query}
+	+getValue(int row, int col) : int {query}
+	+{static} BOX_SIZE : static const int
+	+{static} SIZE : static const int
+	+clear() : void
+	+setValue(int row, int col, int value) : void
+}
+
+
+class Cell {
+	+Cell()
+	+Cell(int value, bool fixed)
+	-fixed : bool
+	+isEmpty() : bool {query}
+	+isFixed() : bool {query}
+	+getValue() : int {query}
+	-value : int
+	+clear() : void
+	+setFixed(bool fixed) : void
+	+setValue(int value) : void
+}
+
+
+class ConsoleUI {
+	+ConsoleUI()
+	-game : SudokuGame
+	-selectedCol : int
+	-selectedRow : int
+	-statusMessage : std::string
+	-clearSelectedCell() : void
+	-enterValue(int value) : void
+	-moveSelection(int rowDelta, int colDelta) : void
+	-render() : void {query}
+	+run() : void
+}
+
+
+class Generator {
+	+generatePuzzle(int emptyCells) : Board
+	-generateSolvedBoard() : Board
+	-fillBoard(Board& board) : bool
+	-markFixedCells(Board& board) : void
+	-removeCells(Board& board, int emptyCells) : void
+}
+
+
+class Solver {
+	-findEmptyCell(const Board& board, int& row, int& col) : bool {query}
+	+solve(Board& board) : bool
+}
+
+
+class SudokuGame {
+	+SudokuGame()
+	-board : Board
+	+getBoard() : Board& {query}
+	+clearCell(int row, int col) : bool
+	+isCompleted() : bool {query}
+	+makeMove(int row, int col, int value) : bool
+	+newGame(int emptyCells) : void
+}
+
+
+class SudokuRules {
+	+{static} isBoardValid(const Board& board) : bool
+	+{static} isMoveValid(const Board& board, int row, int col, int value) : bool
+	+{static} isValueInBox(const Board& board, int row, int col, int value) : bool
+	+{static} isValueInColumn(const Board& board, int col, int value) : bool
+	+{static} isValueInRow(const Board& board, int row, int value) : bool
+}
+
+
+
+
+
+/' Inheritance relationships '/
+
+
+
+
+/' Aggregation relationships '/
+
+Board *-- Cell
+
+
+ConsoleUI *-- SudokuGame
+
+
+SudokuGame *-- Board
+
+
+
+
+
+
+/' Nested objects '/
+
+
+
+@enduml
