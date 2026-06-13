@@ -10,8 +10,16 @@
 #include <memory>
 #include <sstream>
 #include <string>
+
+#ifdef _WIN32
+#define NOMINMAX
+#include <conio.h>
+#include <windows.h>
+#else
 #include <termios.h>
 #include <unistd.h>
+#endif
+
 #include <vector>
 
 namespace
@@ -53,12 +61,32 @@ enum class Key
 class RawTerminalMode
 {
 private:
+#ifdef _WIN32
+    DWORD originalOutputMode;
+    bool outputModeChanged;
+#else
     termios originalSettings;
     bool enabled;
+#endif
 
 public:
-    RawTerminalMode() : enabled(false)
+    RawTerminalMode()
+#ifdef _WIN32
+        : originalOutputMode(0),
+          outputModeChanged(false)
+#else
+        : enabled(false)
+#endif
     {
+#ifdef _WIN32
+        HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        if (output != INVALID_HANDLE_VALUE && GetConsoleMode(output, &originalOutputMode))
+        {
+            DWORD newMode = originalOutputMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+            outputModeChanged = SetConsoleMode(output, newMode) != 0;
+        }
+#else
         if (tcgetattr(STDIN_FILENO, &originalSettings) == 0)
         {
             termios rawSettings = originalSettings;
@@ -68,14 +96,22 @@ public:
 
             enabled = tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawSettings) == 0;
         }
+#endif
     }
 
     ~RawTerminalMode()
     {
+#ifdef _WIN32
+        if (outputModeChanged)
+        {
+            SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), originalOutputMode);
+        }
+#else
         if (enabled)
         {
             tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalSettings);
         }
+#endif
     }
 };
 
@@ -115,6 +151,57 @@ Key digitToKey(char character)
 
 Key readKey()
 {
+#ifdef _WIN32
+    int character = _getch();
+
+    if (character == '\r')
+    {
+        return Key::Enter;
+    }
+
+    if (character == 'q' || character == 'Q')
+    {
+        return Key::Quit;
+    }
+
+    if (character == 's' || character == 'S')
+    {
+        return Key::Save;
+    }
+
+    if (std::isdigit(static_cast<unsigned char>(character)))
+    {
+        return digitToKey(static_cast<char>(character));
+    }
+
+    if (character == 8)
+    {
+        return Key::Backspace;
+    }
+
+    if (character != 0 && character != 224)
+    {
+        return Key::Unknown;
+    }
+
+    int extendedKey = _getch();
+
+    switch (extendedKey)
+    {
+    case 72:
+        return Key::Up;
+    case 80:
+        return Key::Down;
+    case 77:
+        return Key::Right;
+    case 75:
+        return Key::Left;
+    case 83:
+        return Key::Delete;
+    default:
+        return Key::Unknown;
+    }
+#else
     char character = '\0';
 
     if (read(STDIN_FILENO, &character, 1) != 1)
@@ -188,6 +275,7 @@ Key readKey()
     default:
         return Key::Unknown;
     }
+#endif
 }
 
 int keyToValue(Key key)
@@ -311,19 +399,19 @@ std::string helpLine(int row, int maxValue)
     case 6:
         return maxValue > 9 ? "  1 + Enter    - wpisz 1" : "  s            - zapisz gre";
     case 7:
-        return maxValue > 9 ? "    0/Del        - wyczysc pole" : "  q            - powrot do menu";
+        return maxValue > 9 ? "  Del          - wyczysc pole" : "  q            - powrot do menu";
     case 8:
         return maxValue > 9 ? "  s            - zapisz gre" : "Kolory:";
     case 9:
-        return maxValue > 9 ? "   s q            - powrot do menu" : "  bialy        - pola startowe";
+        return maxValue > 9 ? "  q            - powrot do menu" : "  bialy        - pola startowe";
     case 10:
         return maxValue > 9 ? "Kolory:" : "  zielony      - pola gracza";
     case 11:
         return maxValue > 9 ? "  bialy        - pola startowe" : "  niebieski    - aktywne pole";
     case 12:
         return maxValue > 9 ? "  zielony      - pola gracza" : "";
-    case 13:
-        return maxValue > 9 ? "  niebieski    - aktywne pole" : "";
+    // case 13:
+    //     return maxValue > 9 ? "  niebieski    - aktywne pole" : "";
     default:
         return "";
     }
