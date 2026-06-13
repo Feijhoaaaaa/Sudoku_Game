@@ -12,6 +12,12 @@ add_executable(Sudoku_Game main.cpp
     core/Solver.h core/Solver.cpp
     core/Generator.h core/Generator.cpp
     core/SudokuGame.h core/SudokuGame.cpp
+    core/Position.h core/Position.cpp
+    core/GameMode.h core/GameMode.cpp
+    core/SudokuModeBase.h core/SudokuModeBase.cpp
+    core/StandardSudokuMode.h core/StandardSudokuMode.cpp
+    core/LargeSudokuMode.h core/LargeSudokuMode.cpp
+    core/SaveManager.h core/SaveManager.cpp
     core/ConsoleUI.h core/ConsoleUI.cpp)
 
 include(GNUInstallDirs)

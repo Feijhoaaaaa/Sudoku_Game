@@ -20,3 +20,4 @@ Makefile
 *.ind
 *.ilg
 *.pdf
+sudoku_save.txt

@@ -1,16 +1,19 @@
 #ifndef CONSOLEUI_H
 #define CONSOLEUI_H
 
-#include "SudokuGame.h"
+#include "GameMode.h"
+#include "Position.h"
 
+#include <memory>
 #include <string>
 
 /**
  * @class ConsoleUI
- * @brief Obsługuje interaktywny terminalowy interfejs gry Sudoku.
+ * @brief Obsługuje menu i interaktywny terminalowy interfejs gry Sudoku.
  *
- * Klasa odpowiada za wyświetlanie planszy, sterowanie kursorem
- * za pomocą strzałek oraz przekazywanie ruchów gracza do klasy SudokuGame.
+ * Klasa pokazuje praktyczne użycie polimorfizmu: przechowuje aktywną grę
+ * jako wskaźnik do GameMode, a rzeczywisty tryb może być planszą 9x9
+ * albo 16x16.
  */
 class ConsoleUI
 {
@@ -19,12 +22,7 @@ private:
     /**
      * @brief Aktualnie zaznaczony wiersz planszy.
      */
-    int selectedRow;
-
-    /**
-     * @brief Aktualnie zaznaczona kolumna planszy.
-     */
-    int selectedCol;
+    Position selectedPosition;
 
     /**
      * @brief Komunikat wyświetlany pod planszą.
@@ -32,14 +30,53 @@ private:
     std::string statusMessage;
 
     /**
-     * @brief Aktualna rozgrywka Sudoku.
+     * @brief Aktualnie wybrany poziom trudności.
      */
-    SudokuGame game;
+    Difficulty selectedDifficulty;
 
     /**
-     * @brief Rysuje aktualny stan interfejsu w terminalu.
+     * @brief Wybrany rozmiar bloku: 3 oznacza 9x9, 4 oznacza 16x16.
      */
-    void render() const;
+    int selectedBoxSize;
+
+    /**
+     * @brief Aktualny tryb gry obsługiwany polimorficznie.
+     */
+    std::unique_ptr<GameMode> game;
+
+    /**
+     * @brief Pierwsza cyfra wartości dwucyfrowej w trybie 16x16.
+     */
+    int pendingLeadingDigit;
+
+    /**
+     * @brief Tworzy tryb gry zgodny z wyborem w menu.
+     *
+     * @return Wskaźnik do nowego trybu gry.
+     */
+    std::unique_ptr<GameMode> createSelectedMode() const;
+
+    /**
+     * @brief Rysuje menu główne.
+     *
+     * @param selectedOption Aktualnie zaznaczona opcja menu.
+     */
+    void renderMenu(int selectedOption) const;
+
+    /**
+     * @brief Obsługuje menu główne.
+     */
+    void runMenu();
+
+    /**
+     * @brief Rysuje aktualny stan interfejsu gry w terminalu.
+     */
+    void renderGame() const;
+
+    /**
+     * @brief Uruchamia pętlę aktywnej gry.
+     */
+    void runGame();
 
     /**
      * @brief Przesuwa zaznaczenie o podany wektor.
@@ -48,6 +85,15 @@ private:
      * @param colDelta Zmiana kolumny.
      */
     void moveSelection(int rowDelta, int colDelta);
+
+    /**
+     * @brief Obsługuje wpisywanie cyfry.
+     *
+     * W trybie 16x16 cyfra 1 może rozpocząć wartość dwucyfrową.
+     *
+     * @param value Wciśnięta cyfra.
+     */
+    void handleDigit(int value);
 
     /**
      * @brief Próbuje wpisać wartość w aktualnie zaznaczone pole.
@@ -61,6 +107,23 @@ private:
      */
     void clearSelectedCell();
 
+    /**
+     * @brief Zapisuje aktywną rozgrywkę.
+     */
+    void saveCurrentGame();
+
+    /**
+     * @brief Rozpoczyna nową rozgrywkę zgodnie z ustawieniami menu.
+     */
+    void startNewGame();
+
+    /**
+     * @brief Próbuje wczytać ostatni zapis gry.
+     *
+     * @return true jeśli zapis został wczytany.
+     */
+    bool loadSavedGame();
+
 public:
 
     /**
@@ -69,7 +132,7 @@ public:
     ConsoleUI();
 
     /**
-     * @brief Uruchamia główną pętlę interaktywnej gry.
+     * @brief Uruchamia program od menu głównego.
      */
     void run();
 };
