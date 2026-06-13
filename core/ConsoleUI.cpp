@@ -290,26 +290,6 @@ std::string separatorLine(int size, int boxSize, int cellWidth)
     return line;
 }
 
-int boardTextWidth(int size, int boxSize, int cellWidth)
-{
-    int valuesWidth = size * (cellWidth + 1);
-    int separatorsWidth = (size / boxSize - 1) * 2;
-
-    return valuesWidth + separatorsWidth;
-}
-
-void printHelpPadding(int printedWidth, int boardWidth)
-{
-    int spacing = boardWidth - printedWidth + 4;
-
-    if (spacing < 4)
-    {
-        spacing = 4;
-    }
-
-    std::cout << std::string(spacing, ' ');
-}
-
 std::string helpLine(int row, int maxValue)
 {
     switch (row)
@@ -489,7 +469,6 @@ void ConsoleUI::renderGame() const
     int size = game->getSize();
     int boxSize = game->getBoxSize();
     int cellWidth = game->getMaxValue() > 9 ? 2 : 1;
-    int boardWidth = boardTextWidth(size, boxSize, cellWidth);
     int helpRow = 0;
 
     std::cout << TITLE_COLOR << game->getName() << RESET_COLOR << std::endl;
@@ -501,10 +480,7 @@ void ConsoleUI::renderGame() const
     {
         if (row % boxSize == 0 && row != 0)
         {
-            std::string separator = separatorLine(size, boxSize, cellWidth);
-
-            std::cout << STATUS_COLOR << separator << RESET_COLOR;
-            printHelpPadding(static_cast<int>(separator.length()), boardWidth);
+            std::cout << STATUS_COLOR << separatorLine(size, boxSize, cellWidth) << RESET_COLOR << "   ";
             printHelpLine(helpRow, game->getMaxValue());
             std::cout << std::endl;
             helpRow++;
@@ -542,7 +518,7 @@ void ConsoleUI::renderGame() const
             std::cout << std::setw(cellWidth) << formatValue(value) << " " << RESET_COLOR;
         }
 
-        printHelpPadding(boardWidth, boardWidth);
+        std::cout << "   ";
         printHelpLine(helpRow, game->getMaxValue());
         std::cout << std::endl;
         helpRow++;
