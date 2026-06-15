@@ -1,9 +1,12 @@
 .gitrepo/
+.agents/
+.codex/
 build/
 Build/
 build-*/
 html/
 latex/
+docs/generated/
 .qtcreator/
 .vscode/
 .idea/

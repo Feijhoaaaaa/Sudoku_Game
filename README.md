@@ -71,9 +71,9 @@ daje wartość 16. Aby wpisać samo 1, należy nacisnąć `1`, a potem `Enter`.
 
 - instrukcja użytkownika: `docs/user_manual.pdf`,
 - opis użytych narzędzi: `docs/tools_used.pdf`,
-- dokumentacja Doxygen HTML: `html/index.html`,
-- dokumentacja Doxygen PDF: `latex/refman.pdf`,
-- diagram klas: `uml/sudoku_class_diagram.png`.
+- dokumentacja Doxygen HTML po wygenerowaniu: `docs/generated/doxygen/html/index.html`,
+- dokumentacja Doxygen PDF po wygenerowaniu: `docs/generated/doxygen/latex/refman.pdf`,
+- diagram klas: `docs/diagrams/sudoku_class_diagram.png`.
 
 Źródła dokumentacji użytkownika znajdują się w katalogu `docs`.
 

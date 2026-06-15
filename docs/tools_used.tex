@@ -88,7 +88,7 @@ cmake --build build/windows-x64-static --parallel
 Doxygen został użyty do wygenerowania dokumentacji programistycznej na podstawie
 komentarzy w plikach źródłowych C++.
 
-Konfiguracja znajduje się w pliku \texttt{Doxyfile}. Najważniejsze parametry:
+Konfiguracja znajduje się w pliku \texttt{config/Doxyfile}. Najważniejsze parametry:
 
 \begin{longtable}{p{0.35\textwidth}p{0.55\textwidth}}
 \textbf{Parametr} & \textbf{Znaczenie} \\
@@ -98,9 +98,9 @@ Konfiguracja znajduje się w pliku \texttt{Doxyfile}. Najważniejsze parametry:
 \texttt{RECURSIVE = YES} & Rekurencyjne przeglądanie katalogów wejściowych. \\
 \texttt{EXTRACT\_ALL = YES} & Do dokumentacji trafiają również elementy bez pełnych komentarzy. \\
 \texttt{GENERATE\_HTML = YES} & Generowanie dokumentacji HTML. \\
-\texttt{HTML\_OUTPUT = html} & Katalog wynikowy HTML. \\
+\texttt{HTML\_OUTPUT = html} & Katalog wynikowy HTML wewnątrz \texttt{docs/generated/doxygen}. \\
 \texttt{GENERATE\_LATEX = YES} & Generowanie dokumentacji LaTeX. \\
-\texttt{LATEX\_OUTPUT = latex} & Katalog wynikowy LaTeX. \\
+\texttt{LATEX\_OUTPUT = latex} & Katalog wynikowy LaTeX wewnątrz \texttt{docs/generated/doxygen}. \\
 \texttt{HAVE\_DOT = YES} & Użycie Graphviz do diagramów zależności. \\
 \texttt{CALL\_GRAPH = YES} & Generowanie grafów wywołań funkcji. \\
 \texttt{CALLER\_GRAPH = YES} & Generowanie grafów funkcji wywołujących. \\
@@ -110,18 +110,18 @@ Konfiguracja znajduje się w pliku \texttt{Doxyfile}. Najważniejsze parametry:
 Polecenie generujące dokumentację:
 
 \begin{lstlisting}
-doxygen Doxyfile
+doxygen config/Doxyfile
 \end{lstlisting}
 
-Dokumentacja HTML jest dostępna w \texttt{html/index.html}. Dokumentacja LaTeX
-jest generowana w katalogu \texttt{latex}. Plik PDF dokumentacji programistycznej
+Dokumentacja HTML jest dostępna w \texttt{docs/generated/doxygen/html/index.html}. Dokumentacja LaTeX
+jest generowana w katalogu \texttt{docs/generated/doxygen/latex}. Plik PDF dokumentacji programistycznej
 można zbudować poleceniem:
 
 \begin{lstlisting}
-make -C latex
+make -C docs/generated/doxygen/latex
 \end{lstlisting}
 
-Wynikowy plik to \texttt{latex/refman.pdf}.
+Wynikowy plik to \texttt{docs/generated/doxygen/latex/refman.pdf}.
 
 \section{clang-uml}
 
@@ -132,7 +132,7 @@ Aktualna konfiguracja:
 
 \begin{lstlisting}
 compilation_database_dir: build
-output_directory: uml
+output_directory: docs/diagrams
 
 diagrams:
   sudoku_class_diagram:
@@ -163,14 +163,18 @@ cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 Diagram generuje się poleceniem:
 
 \begin{lstlisting}
-clang-uml
+clang-uml --query-driver /usr/bin/g++
 \end{lstlisting}
 
-Wyniki są zapisywane w katalogu \texttt{uml}. Najważniejsze pliki:
+Opcja \texttt{--query-driver /usr/bin/g++} pozwala \texttt{clang-uml} pobrać
+ścieżki nagłówków systemowych z kompilatora użytego przez CMake. Bez tego na
+niektórych instalacjach Clang może nie odnaleźć standardowych nagłówków C/C++.
+
+Wyniki są zapisywane w katalogu \texttt{docs/diagrams}. Najważniejsze pliki:
 \begin{itemize}[noitemsep]
-    \item \texttt{uml/sudoku\_class\_diagram.puml},
-    \item \texttt{uml/sudoku\_class\_diagram.svg},
-    \item \texttt{uml/sudoku\_class\_diagram.png}.
+    \item \texttt{docs/diagrams/sudoku\_class\_diagram.puml},
+    \item \texttt{docs/diagrams/sudoku\_class\_diagram.svg},
+    \item \texttt{docs/diagrams/sudoku\_class\_diagram.png}.
 \end{itemize}
 
 \section{LaTeX}
