@@ -1,0 +1,254 @@
+@startuml
+class "std::string" as C_0001275076681856179721
+class C_0001275076681856179721 {
+__
+}
+class "std::unique_ptr<GameMode>" as C_0006535434757049162344
+class C_0006535434757049162344 {
+__
+}
+class "std::vector<int>" as C_0009228492206209329687
+class C_0009228492206209329687 {
+__
+}
+enum "Difficulty" as C_0008577530328261510572
+enum C_0008577530328261510572 {
+Easy
+Medium
+Hard
+}
+abstract "GameMode" as C_0002855833693348667353
+abstract C_0002855833693348667353 {
++~GameMode() = default : void
+..
+{abstract} +clearCell(int row, int col) = 0 : bool
+{abstract} +getBoxSize() const = 0 : int
+{abstract} +getDifficulty() const = 0 : Difficulty
+{abstract} +getMaxValue() const = 0 : int
+{abstract} +getName() const = 0 : std::string
+{abstract} +getSize() const = 0 : int
+{abstract} +getValue(int row, int col) const = 0 : int
+{abstract} +isCompleted() const = 0 : bool
+{abstract} +isFixed(int row, int col) const = 0 : bool
+{abstract} +loadState(const int * values, const int * fixed, Difficulty difficulty) = 0 : bool
+{abstract} +makeMove(int row, int col, int value) = 0 : bool
+{abstract} +startNew(Difficulty difficulty) = 0 : void
+__
+}
+class "Position" as C_0003696319223639600799
+class C_0003696319223639600799 {
++Position(int row = 0, int col = 0) : void
+..
++operator!=(const Position & other) const : bool
++operator==(const Position & other) const : bool
+..
++getCol() const : int
++getRow() const : int
++set(int newRow, int newCol) : void
+__
+-col : int
+-row : int
+}
+class "ConsoleUI" as C_0006947911922399145405
+class C_0006947911922399145405 {
++ConsoleUI() : void
+..
+-clearSelectedCell() : void
+-createSelectedMode() const : std::unique_ptr<GameMode>
+-enterValue(int value) : void
+-handleDigit(int value) : void
+-loadSavedGame() : bool
+-moveSelection(int rowDelta, int colDelta) : void
+-renderGame() const : void
+-renderMenu(int selectedOption) const : void
++run() : void
+-runGame() : void
+-runMenu() : void
+-saveCurrentGame() : void
+-startNewGame() : void
+__
+-game : std::unique_ptr<GameMode>
+-pendingLeadingDigit : int
+-selectedBoxSize : int
+-selectedDifficulty : Difficulty
+-selectedPosition : Position
+-statusMessage : std::string
+}
+class "Cell" as C_0016637019227324362051
+class C_0016637019227324362051 {
++Cell() : void
++Cell(int value, bool fixed) : void
+..
++clear() : void
++getValue() const : int
++isEmpty() const : bool
++isFixed() const : bool
++setFixed(bool fixed) : void
++setValue(int value) : void
+__
+-fixed : bool
+-value : int
+}
+class "Board" as C_0011531644440528900757
+class C_0011531644440528900757 {
++Board() : void
+..
++operator()(int row, int col) : Cell &
++operator()(int row, int col) const : const Cell &
+..
++at(int row, int col) : Cell &
++at(int row, int col) const : const Cell &
++clear() : void
++getValue(int row, int col) const : int
++isEmpty(int row, int col) const : bool
++isFixed(int row, int col) const : bool
++isFull() const : bool
++setValue(int row, int col, int value) : void
+__
+{static} +BOX_SIZE : const int
+{static} +SIZE : const int
+-cells : Cell[9][9]
+}
+class "SudokuRules" as C_0002055947305556780100
+class C_0002055947305556780100 {
+{static} +isBoardValid(const Board & board) : bool
+{static} +isMoveValid(const Board & board, int row, int col, int value) : bool
+{static} +isValueInBox(const Board & board, int row, int col, int value) : bool
+{static} +isValueInColumn(const Board & board, int col, int value) : bool
+{static} +isValueInRow(const Board & board, int row, int value) : bool
+__
+}
+class "SaveManager" as C_0018070118813866819585
+class C_0018070118813866819585 {
+{static} +load(const std::string & fileName = DEFAULT_SAVE_FILE) : std::unique_ptr<GameMode>
+{static} +save(const GameMode & game, const std::string & fileName = DEFAULT_SAVE_FILE) : bool
+__
+{static} +DEFAULT_SAVE_FILE : const char *
+}
+class "SudokuModeBase" as C_0003255495263245313361
+class C_0003255495263245313361 {
++SudokuModeBase(int boxSize) : void
+..
+#canPlaceValue(int row, int col, int value) const : bool
++clearCell(int row, int col) : bool
+#emptyCellsForDifficulty(Difficulty difficulty) const : int
+#generateSolvedValues() const : std::vector<int>
++getBoxSize() const : int
++getDifficulty() const : Difficulty
++getMaxValue() const : int
++getSize() const : int
++getValue(int row, int col) const : int
+#index(int row, int col) const : int
++isCompleted() const : bool
++isFixed(int row, int col) const : bool
+#isInside(int row, int col) const : bool
++loadState(const int * values, const int * fixed, Difficulty difficulty) : bool
++makeMove(int row, int col, int value) : bool
++startNew(Difficulty difficulty) : void
+__
+#boxSize : int
+#difficulty : Difficulty
+#fixedFields : std::vector<int>
+#size : int
+#values : std::vector<int>
+}
+class "LargeSudokuMode" as C_0018343952536132543542
+class C_0018343952536132543542 {
++LargeSudokuMode() : void
+..
++getName() const : std::string
+__
+}
+class "StandardSudokuMode" as C_0007917263121607432238
+class C_0007917263121607432238 {
++StandardSudokuMode() : void
+..
++getName() const : std::string
+__
+}
+class "Solver" as C_0007455836953863541758
+class C_0007455836953863541758 {
+-findEmptyCell(const Board & board, int & row, int & col) const : bool
++solve(Board & board) : bool
+__
+}
+class "SudokuGame" as C_0004831634958711182374
+class C_0004831634958711182374 {
++SudokuGame() : void
+..
++clearCell(int row, int col) : bool
++getBoard() const : const Board &
++isCompleted() const : bool
++makeMove(int row, int col, int value) : bool
++newGame(int emptyCells) : void
+__
+-board : Board
+}
+class "Generator" as C_0017375762107950217233
+class C_0017375762107950217233 {
+-fillBoard(Board & board) : bool
++generatePuzzle(int emptyCells) : Board
+-generateSolvedBoard() : Board
+-markFixedCells(Board & board) : void
+-removeCells(Board & board, int emptyCells) : void
+__
+}
+enum "Key" as C_0011885248113263802190
+enum C_0011885248113263802190 {
+Up
+Down
+Left
+Right
+Enter
+Digit0
+Digit1
+Digit2
+Digit3
+Digit4
+Digit5
+Digit6
+Digit7
+Digit8
+Digit9
+Backspace
+Delete
+Save
+Quit
+Unknown
+}
+class "RawTerminalMode" as C_0015753912084553738218
+class C_0015753912084553738218 {
++RawTerminalMode() : void
++~RawTerminalMode() : void
+__
+-enabled : bool
+-originalSettings : termios
+}
+C_0006535434757049162344 ..> C_0002855833693348667353
+C_0002855833693348667353 ..> C_0008577530328261510572
+C_0002855833693348667353 ..> C_0001275076681856179721
+C_0006947911922399145405 ..> C_0002855833693348667353
+C_0006947911922399145405 o-- C_0003696319223639600799 : -selectedPosition
+C_0006947911922399145405 o-- C_0001275076681856179721 : -statusMessage
+C_0006947911922399145405 o-- C_0008577530328261510572 : -selectedDifficulty
+C_0006947911922399145405 o-- C_0006535434757049162344 : -game
+C_0011531644440528900757 o-- "81" C_0016637019227324362051 : -cells
+C_0002055947305556780100 ..> C_0011531644440528900757
+C_0018070118813866819585 ..> C_0002855833693348667353
+C_0018070118813866819585 ..> C_0001275076681856179721
+C_0018070118813866819585 ..> C_0006535434757049162344
+C_0003255495263245313361 o-- C_0008577530328261510572 : #difficulty
+C_0003255495263245313361 o-- C_0009228492206209329687 : #values
+C_0003255495263245313361 o-- C_0009228492206209329687 : #fixedFields
+C_0002855833693348667353 <|-- C_0003255495263245313361
+C_0018343952536132543542 ..> C_0001275076681856179721
+C_0003255495263245313361 <|-- C_0018343952536132543542
+C_0007917263121607432238 ..> C_0001275076681856179721
+C_0003255495263245313361 <|-- C_0007917263121607432238
+C_0007455836953863541758 ..> C_0011531644440528900757
+C_0004831634958711182374 o-- C_0011531644440528900757 : -board
+C_0017375762107950217233 ..> C_0011531644440528900757
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version clang version 21.1.8
+@enduml

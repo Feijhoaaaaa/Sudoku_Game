@@ -12,10 +12,13 @@
 #include <string>
 
 #ifdef _WIN32
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <conio.h>
 #include <windows.h>
 #else
+#include <sys/select.h>
 #include <termios.h>
 #include <unistd.h>
 #endif
@@ -119,6 +122,26 @@ void clearScreen()
 {
     std::cout << "\033[2J\033[H";
 }
+
+#ifndef _WIN32
+bool readWithTimeout(char& character, int timeoutMilliseconds)
+{
+    fd_set readSet;
+    FD_ZERO(&readSet);
+    FD_SET(STDIN_FILENO, &readSet);
+
+    timeval timeout {};
+    timeout.tv_sec = timeoutMilliseconds / 1000;
+    timeout.tv_usec = (timeoutMilliseconds % 1000) * 1000;
+
+    if (select(STDIN_FILENO + 1, &readSet, nullptr, nullptr, &timeout) <= 0)
+    {
+        return false;
+    }
+
+    return read(STDIN_FILENO, &character, 1) == 1;
+}
+#endif
 
 Key digitToKey(char character)
 {
@@ -241,12 +264,12 @@ Key readKey()
 
     char sequence[3] = {};
 
-    if (read(STDIN_FILENO, &sequence[0], 1) != 1)
+    if (!readWithTimeout(sequence[0], 40))
     {
         return Key::Unknown;
     }
 
-    if (read(STDIN_FILENO, &sequence[1], 1) != 1)
+    if (!readWithTimeout(sequence[1], 40))
     {
         return Key::Unknown;
     }
@@ -267,7 +290,7 @@ Key readKey()
     case 'D':
         return Key::Left;
     case '3':
-        if (read(STDIN_FILENO, &sequence[2], 1) == 1 && sequence[2] == '~')
+        if (readWithTimeout(sequence[2], 40) && sequence[2] == '~')
         {
             return Key::Delete;
         }

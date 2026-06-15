@@ -1,0 +1,159 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{url}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\title{Sudoku Game\\Instrukcja użytkownika}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Przeznaczenie programu}
+
+Sudoku Game jest konsolową grą logiczną napisaną w języku C++.
+Program pozwala rozpocząć nową rozgrywkę Sudoku, wybrać poziom trudności,
+zmienić rozmiar planszy, zapisać stan gry oraz wczytać wcześniejszy zapis.
+
+Aplikacja działa w terminalu. Do sterowania używa klawiatury, dlatego najlepiej
+uruchamiać ją w zwykłym oknie terminala, a nie w panelu wyjścia IDE.
+
+\section{Wymagania}
+
+\begin{itemize}[noitemsep]
+    \item System Linux albo Windows.
+    \item Terminal obsługujący sekwencje ANSI.
+    \item Dla samodzielnej kompilacji: CMake oraz kompilator C++17.
+\end{itemize}
+
+Gotowy plik wykonywalny dla Windows znajduje się po zbudowaniu pod ścieżką
+\path{build/windows-x64-static/Sudoku_Game.exe}. Wariant statyczny jest
+najwygodniejszy do przenoszenia na inny komputer z Windows.
+
+\section{Uruchamianie}
+
+\subsection{Linux}
+
+\begin{verbatim}
+cmake -S . -B build
+cmake --build build
+./build/Sudoku_Game
+\end{verbatim}
+
+\subsection{Windows}
+
+Jeżeli dostępny jest gotowy plik \texttt{Sudoku\_Game.exe}, należy uruchomić go
+w terminalu Windows, PowerShell albo Windows Terminal. Program jest aplikacją
+konsolową, więc nie otwiera osobnego okna graficznego.
+
+\section{Menu główne}
+
+Po uruchomieniu programu wyświetlane jest menu. Aktywna opcja jest wyróżniona
+kolorem tła.
+
+\begin{longtable}{p{0.3\textwidth}p{0.6\textwidth}}
+\textbf{Opcja} & \textbf{Opis} \\
+\hline
+Nowa gra & Tworzy nową planszę zgodnie z aktualnym trybem i poziomem trudności. \\
+Wczytaj zapis & Wczytuje ostatni zapis z pliku \texttt{sudoku\_save.txt}. \\
+Poziom trudności & Przełącza poziomy: łatwy, średni i trudny. \\
+Tryb gry & Przełącza planszę 9x9 albo 16x16. \\
+Wyjście & Kończy działanie programu. \\
+\end{longtable}
+
+\section{Sterowanie}
+
+\begin{longtable}{p{0.3\textwidth}p{0.6\textwidth}}
+\textbf{Klawisz} & \textbf{Działanie} \\
+\hline
+Strzałki & Przesuwają zaznaczone pole albo wybór w menu. \\
+Enter & Zatwierdza opcję w menu. W trybie 16x16 zatwierdza wartość 1, jeżeli wcześniej naciśnięto klawisz 1. \\
+1--9 & Wpisują wartość do pola gracza. \\
+0 & Czyści wybrane pole gracza. \\
+Backspace, Delete & Czyści wybrane pole gracza. \\
+s & Zapisuje aktualny stan gry. \\
+q & Wraca z gry do menu albo zamyka program z poziomu menu. \\
+\end{longtable}
+
+\section{Zasady gry}
+
+Celem gry jest uzupełnienie całej planszy tak, aby w każdym wierszu, każdej
+kolumnie i każdym bloku występowała każda dopuszczalna wartość dokładnie raz.
+Program nie pozwala wpisać liczby, która łamie zasady Sudoku.
+
+Pola startowe są stałe i nie można ich zmienić ani wyczyścić. Pola wpisane przez
+gracza można poprawiać w dowolnym momencie.
+
+\section{Tryby gry}
+
+\subsection{Sudoku 9x9}
+
+Klasyczny wariant Sudoku. Plansza ma 9 wierszy, 9 kolumn i bloki 3x3. Do pól
+można wpisywać wartości od 1 do 9.
+
+\subsection{Sudoku 16x16}
+
+Większy wariant gry. Plansza ma 16 wierszy, 16 kolumn i bloki 4x4. Do pól można
+wpisywać wartości od 1 do 16.
+
+Wartości od 10 do 16 wpisuje się jako sekwencję dwóch klawiszy:
+\begin{itemize}[noitemsep]
+    \item \texttt{1}, potem \texttt{0} wpisuje 10,
+    \item \texttt{1}, potem \texttt{1} wpisuje 11,
+    \item \texttt{1}, potem \texttt{6} wpisuje 16.
+\end{itemize}
+
+Jeżeli użytkownik chce wpisać samo 1 w trybie 16x16, powinien nacisnąć
+\texttt{1}, a następnie \texttt{Enter}.
+
+\section{Zapis i odczyt gry}
+
+Klawisz \texttt{s} zapisuje aktualną rozgrywkę do pliku
+\texttt{sudoku\_save.txt} w katalogu, z którego uruchomiono program. Zapis
+przechowuje:
+
+\begin{itemize}[noitemsep]
+    \item rozmiar planszy,
+    \item poziom trudności,
+    \item wartości pól,
+    \item informację o polach startowych.
+\end{itemize}
+
+Opcja \textit{Wczytaj zapis} odtwarza ten plik. Jeżeli pliku nie ma albo ma
+niepoprawny format, program wraca do menu i wyświetla komunikat o błędzie.
+
+\section{Kolory w programie}
+
+\begin{longtable}{p{0.3\textwidth}p{0.6\textwidth}}
+\textbf{Kolor} & \textbf{Znaczenie} \\
+\hline
+Biały & Pole startowe, którego nie można zmienić. \\
+Zielony & Wartość wpisana przez gracza. \\
+Szary & Puste pole. \\
+Niebieskie tło & Aktualnie zaznaczone pole. \\
+\end{longtable}
+
+\section{Zakończenie rozgrywki}
+
+Po poprawnym uzupełnieniu całej planszy program wyświetla komunikat
+gratulacyjny. Naciśnięcie dowolnego klawisza powoduje powrót do menu.
+
+\end{document}

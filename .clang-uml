@@ -1,14 +1,11 @@
 compilation_database_dir: build
-
 output_directory: uml
 
 diagrams:
   sudoku_class_diagram:
     type: class
     glob:
-      - core/*.h
-      - core/*.cpp
       - main.cpp
-    include:
-      namespaces:
-        - ""
+      - core/*.cpp
+      - core/*.h
+    include_system_headers: false

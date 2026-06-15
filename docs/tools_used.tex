@@ -1,0 +1,210 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible
+}
+
+\title{Sudoku Game\\Opis użytych narzędzi i konfiguracji}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Cel dokumentu}
+
+Dokument opisuje narzędzia użyte przy przygotowaniu projektu Sudoku Game:
+kompilację programu, generowanie dokumentacji programistycznej oraz generowanie
+diagramu klas. Informacje można wykorzystać do odtworzenia środowiska i
+ponownego wygenerowania artefaktów projektu.
+
+\section{CMake}
+
+CMake służy do konfiguracji i budowania programu C++.
+Projekt korzysta z pliku \texttt{CMakeLists.txt} w katalogu głównym.
+
+Najważniejsze ustawienia:
+\begin{itemize}[noitemsep]
+    \item minimalna wersja CMake: \texttt{3.16},
+    \item język projektu: C++,
+    \item standard języka: C++17,
+    \item wynikowy program: \texttt{Sudoku\_Game}.
+\end{itemize}
+
+Typowy build lokalny:
+
+\begin{lstlisting}
+cmake -S . -B build
+cmake --build build
+\end{lstlisting}
+
+Build pliku \texttt{.exe} dla Windows z poziomu Linuksa:
+
+\begin{lstlisting}
+cmake -S . -B build/windows-x64 \
+  -DCMAKE_SYSTEM_NAME=Windows \
+  -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+  -DCMAKE_BUILD_TYPE=Release
+
+cmake --build build/windows-x64 --parallel
+\end{lstlisting}
+
+Wariant z linkowaniem statycznym bibliotek GCC i standardowej biblioteki C++:
+
+\begin{lstlisting}
+cmake -S . -B build/windows-x64-static \
+  -DCMAKE_SYSTEM_NAME=Windows \
+  -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+  -DCMAKE_BUILD_TYPE=Release \
+  "-DCMAKE_EXE_LINKER_FLAGS=-static -static-libgcc -static-libstdc++"
+
+cmake --build build/windows-x64-static --parallel
+\end{lstlisting}
+
+\section{Doxygen}
+
+Doxygen został użyty do wygenerowania dokumentacji programistycznej na podstawie
+komentarzy w plikach źródłowych C++.
+
+Konfiguracja znajduje się w pliku \texttt{Doxyfile}. Najważniejsze parametry:
+
+\begin{longtable}{p{0.35\textwidth}p{0.55\textwidth}}
+\textbf{Parametr} & \textbf{Znaczenie} \\
+\hline
+\texttt{PROJECT\_NAME = "Sudoku"} & Nazwa projektu w dokumentacji. \\
+\texttt{INPUT = core main.cpp} & Pliki i katalogi analizowane przez Doxygen. \\
+\texttt{RECURSIVE = YES} & Rekurencyjne przeglądanie katalogów wejściowych. \\
+\texttt{EXTRACT\_ALL = YES} & Do dokumentacji trafiają również elementy bez pełnych komentarzy. \\
+\texttt{GENERATE\_HTML = YES} & Generowanie dokumentacji HTML. \\
+\texttt{HTML\_OUTPUT = html} & Katalog wynikowy HTML. \\
+\texttt{GENERATE\_LATEX = YES} & Generowanie dokumentacji LaTeX. \\
+\texttt{LATEX\_OUTPUT = latex} & Katalog wynikowy LaTeX. \\
+\texttt{HAVE\_DOT = YES} & Użycie Graphviz do diagramów zależności. \\
+\texttt{CALL\_GRAPH = YES} & Generowanie grafów wywołań funkcji. \\
+\texttt{CALLER\_GRAPH = YES} & Generowanie grafów funkcji wywołujących. \\
+\texttt{DOT\_IMAGE\_FORMAT = png} & Format grafik Graphviz. \\
+\end{longtable}
+
+Polecenie generujące dokumentację:
+
+\begin{lstlisting}
+doxygen Doxyfile
+\end{lstlisting}
+
+Dokumentacja HTML jest dostępna w \texttt{html/index.html}. Dokumentacja LaTeX
+jest generowana w katalogu \texttt{latex}. Plik PDF dokumentacji programistycznej
+można zbudować poleceniem:
+
+\begin{lstlisting}
+make -C latex
+\end{lstlisting}
+
+Wynikowy plik to \texttt{latex/refman.pdf}.
+
+\section{clang-uml}
+
+\texttt{clang-uml} został użyty do wygenerowania diagramu klas z kodu C++.
+Konfiguracja znajduje się w pliku \texttt{.clang-uml}.
+
+Aktualna konfiguracja:
+
+\begin{lstlisting}
+compilation_database_dir: build
+output_directory: uml
+
+diagrams:
+  sudoku_class_diagram:
+    type: class
+    glob:
+      - main.cpp
+      - core/*.cpp
+      - core/*.h
+    include_system_headers: false
+\end{lstlisting}
+
+Znaczenie parametrów:
+\begin{itemize}[noitemsep]
+    \item \texttt{compilation\_database\_dir} wskazuje katalog z plikiem \texttt{compile\_commands.json};
+    \item \texttt{output\_directory} wskazuje katalog wynikowy diagramów;
+    \item \texttt{type: class} oznacza diagram klas;
+    \item \texttt{glob} określa analizowane pliki projektu;
+    \item \texttt{include\_system\_headers: false} pomija klasy z nagłówków systemowych.
+\end{itemize}
+
+Przed uruchomieniem \texttt{clang-uml} warto upewnić się, że istnieje aktualna
+baza kompilacji:
+
+\begin{lstlisting}
+cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+\end{lstlisting}
+
+Diagram generuje się poleceniem:
+
+\begin{lstlisting}
+clang-uml
+\end{lstlisting}
+
+Wyniki są zapisywane w katalogu \texttt{uml}. Najważniejsze pliki:
+\begin{itemize}[noitemsep]
+    \item \texttt{uml/sudoku\_class\_diagram.puml},
+    \item \texttt{uml/sudoku\_class\_diagram.svg},
+    \item \texttt{uml/sudoku\_class\_diagram.png}.
+\end{itemize}
+
+\section{LaTeX}
+
+LaTeX został użyty do przygotowania dokumentacji przeznaczonej dla zwykłego
+użytkownika oraz dokumentu opisującego użyte narzędzia. Źródła znajdują się w
+katalogu \texttt{docs}.
+
+Pliki źródłowe:
+\begin{itemize}[noitemsep]
+    \item \texttt{docs/user\_manual.tex} -- instrukcja użytkownika,
+    \item \texttt{docs/tools\_used.tex} -- opis narzędzi i konfiguracji.
+\end{itemize}
+
+PDF-y można zbudować poleceniem:
+
+\begin{lstlisting}
+make -C docs
+\end{lstlisting}
+
+Wyniki:
+\begin{itemize}[noitemsep]
+    \item \texttt{docs/user\_manual.pdf},
+    \item \texttt{docs/tools\_used.pdf}.
+\end{itemize}
+
+\section{Wersje narzędzi użyte podczas przygotowania dokumentacji}
+
+W aktualnym środowisku użyto:
+\begin{itemize}[noitemsep]
+    \item Doxygen 1.16.1,
+    \item clang-uml 0.6.2,
+    \item CMake 4.3.3,
+    \item x86\_64-w64-mingw32-g++ 16.1.0.
+\end{itemize}
+
+\end{document}

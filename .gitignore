@@ -3,14 +3,23 @@ build/
 html/
 latex/
 .qtcreator/
+.vscode/
+.idea/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+compile_commands.json
+compile_commands.json.bak
 *.o
+*.obj
 *.a
 *.so
+*.dll
 *.exe
+*.pdb
+*.ilk
+*.lib
 *.user
 *.log
 *.aux
@@ -21,3 +30,30 @@ Makefile
 *.ilg
 *.pdf
 sudoku_save.txt
+
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.kdbx
+*.sqlite
+*.db
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Keep final project documentation PDFs under version control.
+!docs/*.pdf
+!latex/refman.pdf
