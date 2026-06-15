@@ -76,3 +76,8 @@ daje wartość 16. Aby wpisać samo 1, należy nacisnąć `1`, a potem `Enter`.
 - diagram klas: `uml/sudoku_class_diagram.png`.
 
 Źródła dokumentacji użytkownika znajdują się w katalogu `docs`.
+
+## Licencja
+
+Projekt jest udostępniony na licencji MIT. Szczegóły znajdują się w pliku
+`LICENSE`.

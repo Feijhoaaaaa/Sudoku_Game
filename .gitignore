@@ -1,26 +1,48 @@
 .gitrepo/
 build/
+Build/
+build-*/
 html/
 latex/
 .qtcreator/
 .vscode/
 .idea/
+
+# CMake generated files
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
+install_manifest.txt
 Makefile
 compile_commands.json
 compile_commands.json.bak
+
+# Compiled files
+*.d
 *.o
 *.obj
+*.slo
+*.lo
+*.gch
+*.pch
 *.a
+*.la
+*.lai
+*.lib
 *.so
+*.so.*
+*.dylib
 *.dll
 *.exe
+*.out
+*.app
 *.pdb
 *.ilk
-*.lib
-*.user
+*.dwo
+*.mod
+*.smod
+
+# LaTeX and generated documentation noise
 *.log
 *.aux
 *.toc
@@ -29,6 +51,8 @@ compile_commands.json.bak
 *.ind
 *.ilg
 *.pdf
+
+# Runtime files
 sudoku_save.txt
 
 # Local environment and secrets
@@ -47,9 +71,16 @@ id_ed25519.pub
 *.sqlite
 *.db
 
+# Test/cache output
+Testing/
+.cache/
+vcpkg_installed/
+
 # OS/editor noise
 .DS_Store
 Thumbs.db
+*.tmp
+*.bak
 *.swp
 *.swo
 *~
