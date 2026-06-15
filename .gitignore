@@ -90,4 +90,6 @@ Thumbs.db
 
 # Keep final project documentation PDFs under version control.
 !docs/*.pdf
+!docs/doxygen/
+!docs/doxygen/*.pdf
 !latex/refman.pdf
